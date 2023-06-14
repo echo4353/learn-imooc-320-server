@@ -19,11 +19,13 @@ jobs:
 
       - name: create a folder
         run: mkdir test-folder
+
       - name: touch a file
       run: |
         cd test-folder
         touch a.txt
         echo "hello world" > a.txt
         cat a.txt
+
       - name: delete a file
         run: rm -rf a.txt
