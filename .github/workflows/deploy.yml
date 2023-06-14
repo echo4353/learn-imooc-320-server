@@ -3,7 +3,7 @@ name: deploy myblog
 on:
   push:
     branches:
-      - 'main'
+      - 'main' # 针对 main 分支
     paths:
       - '.github/workflows/*'
       - 'src/**'
@@ -13,26 +13,31 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
 
-      - name: set id_rsa
+    steps:
+      - uses: actions/checkout@v2 # 第三的 action
+
+      - name: set id_rsa # 设置 id_rsa
         run: |
           mkdir -p ~/.ssh/
-          echo "${{secrets.MY_ID_RSA}}" &gt; ~/.ssh/id_rsa
+          echo "${{secrets.MY_ID_RSA}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan 8.146.199.229 &gt;&gt; ~/.ssh/known_hosts
+          ssh-keyscan 8.146.199.229 >> ~/.ssh/known_hosts
 
-      - name: deploy
+      - name: deploy # 自动发布
         run: |
           ssh root@8.146.199.229 "
+            # 注意：服务器已经 git clone 代码到 /root/myblog/learn-imooc-320-server 目录
+
             cd /root/myblog/learn-imooc-320-server;
-            git checkout .;
+            git checkout . ;
             git checkout main;
-            git pull origin main;
+            git pull origin main; # 重新下载最新的代码
+
+            # 重启服务
             npm install;
-            npm run prd
+            npm run prd;
           "
 
-      - name: delete id_rsa
+      - name: delete id_rsa # 删除 id_rsa
         run: rm -rf ~/.ssh/id_rsa
